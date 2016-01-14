@@ -1,0 +1,25 @@
+{
+  "name": "msub",
+  "version": "0.1.0",
+  "description": "Add simple, localization-friendly string replacement method to String",
+  "keywords": [
+    "localize",
+    "string"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "James Pravetz",
+    "email": "jpravetz@epdoc.com"
+  },
+  "main": "msub.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jpravetz/msub"
+  },
+  "scripts": {
+    "test": "mocha test"
+  },
+  "devDependencies": {
+    "should": "^8.1.1"
+  }
+}
