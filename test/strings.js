@@ -11,6 +11,7 @@ var should = require('should');
      it("Object replacement",function(done) {
          var s = "Hello {A_B} to {C} and {C}".msub({aB:"Bob",c:"Harry"});
          s.should.equal("Hello Bob to Harry and Harry");
+         (typeof s).should.equal('string');
          done();
      });
 

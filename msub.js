@@ -46,5 +46,5 @@ String.prototype.msub = function (args) {
     for (var prop in replaceRegEx) {
         s = s.replace(replaceRegEx[prop], args[prop]);
     }
-    return s;
+    return s.toString();
 };
