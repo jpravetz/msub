@@ -27,9 +27,27 @@ var should = require('should');
          done();
      });
 
-     it("Args escaped replacement",function(done) {
+     it("Args replacement with missing strings",function(done) {
          var s = "Hello {0} to {2} and {1}".msub("Bob","Harry");
          s.should.equal("Hello Bob to {2} and Harry");
+         done();
+     });
+
+     it("Args replacement with string numbers",function(done) {
+         var s = "Hello {0} to {2} and {1}".msub("0","1");
+         s.should.equal("Hello 0 to {2} and 1");
+         done();
+     });
+
+     it("Args number replacement",function(done) {
+         var s = "Hello {0} to {2} and {1}".msub(0,1);
+         s.should.equal("Hello 0 to {2} and 1");
+         done();
+     });
+
+     it("Args undefined replacement",function(done) {
+         var s = "Hello {0} to {2} and {1}".msub();
+         s.should.equal("Hello {0} to {2} and {1}");
          done();
      });
 

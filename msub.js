@@ -20,7 +20,9 @@ var close = "\\\}";
  * @returns {string} Returns s with all instances of args replaced
  */
 String.prototype.msub = function (args) {
-    args || (args = {});
+    if( args === undefined || args === null ) {
+        return this.toString();
+    }
     var replaceRegEx = {};
 
     if (args.constructor === Object) {
