@@ -12,7 +12,7 @@ npm install msub
 ### Include in your project
 
 Adds an ```msub``` method to the String class.
-Only needs to be included once in your project.
+Should only need to be included in your project once.
 
 ```javascript
 require('msub');
@@ -32,17 +32,18 @@ var newString = "This {A} {B} string".msub({b:"my",a:"is"});
 
 Accepts three forms of arguments:
 
-* Object: Key, value pair where all instances of {KEY} are replaced with value.
+* Object: Key, value pair where all instances of {KEY} are replaced with value (see Values section below).
 The keys are converted to uppercase and camelcase is separated with underscore, so
-the key _isExtNow_ becomes _{IS_EXT_NOW}_. 
-* A list of arguments: converted to array
-* An array: replaces {0}, {1}, {2}, etc. with first, second, third, etc arguments.
+the key _isExtNow_ becomes _{IS_EXT_NOW}_. In the special case where the value is a Date object, 
+the key matches strings in the form _{IS_EXT_NOW:format}_.
+* A list of argument values: converted to array
+* An array: replaces {0}, {1}, {2}, etc. with first, second, third, etc argument value.
 
 The first variation of the method is useful for printing out properties of an object.
 
 ```javascript
 var myObj = {
-    id: "123",
+    id: 123,
     cn: "My common name",
     transId: "446"
 };
@@ -55,6 +56,22 @@ of the method, for example:
 ```javascript
 var newString = "This {S} of {0} actually belongs in the string".msub({s:"instance"});
 ```
+
+#### Values
+
+Values can be strings, numbers, booleans or dates. Strings, numbers and booleans are directly converted to Strings.
+Dates are converted using the [moment.js](http://momentjs.com/) format method, with formatting specified in the string
+as shown in this example:
+
+```javascript
+var myObj = {
+    d0: new Date(),
+    d1: new Date(1999),
+    transId: "446"
+};
+console.log("The dates {D0:YYYYMMDD} and {D1:YYYYMMDD} belong to {TRANS_ID}".msub(myObj));
+```
+
 
 ### Tests
 To run the test suite, first install the dependencies, then run npm test:
