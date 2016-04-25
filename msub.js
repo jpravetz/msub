@@ -3,7 +3,6 @@
  * Copyright 2016 Jim Pravetz. MIT License (MIT)
  *****************************************************************************/
 
-// var open = "\\\$\\\{";       // for ${0} pattern
 var open = "\\\{";              // for {0} pattern
 var close = "\\\}";
 var moment = require('moment');
