@@ -1,6 +1,6 @@
 {
   "name": "msub",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Add simple, localization-friendly string replacement method to String",
   "keywords": [
     "localize",

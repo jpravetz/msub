@@ -6,7 +6,6 @@
 // var open = "\\\$\\\{";       // for ${0} pattern
 var open = "\\\{";              // for {0} pattern
 var close = "\\\}";
-var mRegEx = new RegExp(open + "D:([^" + close + "]+)" + close, 'g');
 var moment = require('moment');
 
 
@@ -67,8 +66,5 @@ String.prototype.msub = function (args) {
             }
         }
     }
-    //s = s.replace(mRegEx,function(m0,m1) {
-    //    return m.format(m1);
-    //});
     return s.toString();
 };
