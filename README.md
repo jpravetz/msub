@@ -17,6 +17,16 @@ Should only need to be included in your project once.
 ```javascript
 require('msub');
 ```
+```javascript
+// To use string delimiter syntax of ${STRING}
+require('msub')({open:'${'});
+```
+
+```javascript
+// To not require the moment library
+require('msub')({moment:false});
+```
+
 
 ### Basic Usage
 

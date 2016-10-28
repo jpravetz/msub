@@ -3,10 +3,12 @@
  * Copyright 2016 Jim Pravetz. MIT License (MIT)
  *****************************************************************************/
 
-var open = "\\\{";              // for {0} pattern
+var regOpen = "\\\{";              // for {0} pattern
+var altOpen = "\\\$\\\{";              // for ${0} pattern
+var open = regOpen;
 var close = "\\\}";
-var moment = require('moment');
-
+var useMoment = true;
+var moment;
 
 /**
  * Replace all instances of a {PROP} in this string with a value.
@@ -21,6 +23,10 @@ var moment = require('moment');
  * @returns {string} Returns s with all instances of args replaced
  */
 String.prototype.msub = function (args) {
+
+    if (!moment && useMoment) {
+        moment = require('moment');
+    }
 
     var s = this;
 
@@ -55,7 +61,7 @@ String.prototype.msub = function (args) {
             }
         }
         for (var prop in replaceRegEx) {
-            if (fnEx[prop]) {
+            if (fnEx[prop] && useMoment) {
                 //s = s.replace(replaceRegEx[prop], fnEx[prop]);
                 s = s.replace(replaceRegEx[prop], function (m0, m1) {
                     return moment(args[prop]).format(m1);
@@ -67,3 +73,14 @@ String.prototype.msub = function (args) {
     }
     return s.toString();
 };
+
+module.exports = function (options) {
+    if (options && options.open === '${') {
+        open = altOpen;
+    } else if (options && options.open === '{') {
+        open = regOpen;
+    }
+    if (options && options.moment === false) {
+        useMoment = false;
+    }
+}
