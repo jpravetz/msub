@@ -16,7 +16,7 @@ require('msub');
 ```
 ## Default Use
 
-The msub method replaces all instances of a ````${prop}``` in a string with a value.
+The msub method replaces all instances of a ```${prop}``` in a string with a value.
 Substitutions may be specified as property key/value pairs in an object, or as array entries.
 
 ```javascript
@@ -29,7 +29,7 @@ var newString = "This ${1} ${0} string".msub(["my","is"]);
 
 Accepts three forms of arguments:
 
-* Object: Key, value pair where all instances of ````${key}``` are replaced with value (see Values section below).
+* Object: Key, value pair where all instances of ```${key}``` are replaced with value (see Values section below).
 In the special case where the value is a Date object, and msub is initalized with ```{moment: true}```, the key matches strings in the form _${expiresOn:format}_.
 * A list of argument values: converted to array
 * An array: replaces ${0}, ${1}, ${2}, etc. with first, second, third, etc argument value.
