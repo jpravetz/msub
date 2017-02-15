@@ -51,28 +51,30 @@ String.prototype.msub = function (args) {
         }
 
         var parts = s.match(subRegEx);
-        for (var pdx = 0; pdx < parts.length; pdx++) {
-            var p = parts[pdx].match(extRegEx);
-            if (p.length >= 2) {
-                var key = p[1];
-                var fn = p[3];
-                var val;
-                if (isArray && regNumber.test(key)) {
-                    val = args[parseInt(key, 10)];
-                } else {
-                    val = args[convertKey(key)];
-                }
-                if (val instanceof Date) {
-                    if (fn && typeof val[fn] === 'function') {
-                        val = val[fn]();
-                    } else if (fn && useMoment && moment) {
-                        val = moment(val).format(fn);
+        if (parts && parts.length) {
+            for (var pdx = 0; pdx < parts.length; pdx++) {
+                var p = parts[pdx].match(extRegEx);
+                if (p.length >= 2) {
+                    var key = p[1];
+                    var fn = p[3];
+                    var val;
+                    if (isArray && regNumber.test(key)) {
+                        val = args[parseInt(key, 10)];
                     } else {
-                        val = val.toString();
+                        val = args[convertKey(key)];
                     }
-                }
-                if (val !== undefined) {
-                    s = s.replace(p[0], val);
+                    if (val instanceof Date) {
+                        if (fn && typeof val[fn] === 'function') {
+                            val = val[fn]();
+                        } else if (fn && useMoment && moment) {
+                            val = moment(val).format(fn);
+                        } else {
+                            val = val.toString();
+                        }
+                    }
+                    if (val !== undefined) {
+                        s = s.replace(p[0], val);
+                    }
                 }
             }
         }
