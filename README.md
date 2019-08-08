@@ -2,6 +2,8 @@
 
 Adds a simple, localization-friendly "msub" string replacement method to String class, including support for date values.
 
+Declares typescript types.
+
 ## Install via NPM
 
 ```bash
@@ -16,9 +18,27 @@ Adds an `msub` method to the String class. This only needs to be included in you
 require('msub');
 ```
 
+If you need access to the `msub` singleton (_e.g._ to call init method):
+
+```javascript
+// Access msub singleton
+var msub = require('msub').msub;
+```
+
+With typescript
+
+```ts
+import {} from 'msub';
+```
+
+```ts
+// Access msub singleton
+import { msub } from 'msub';
+```
+
 ## Default Use
 
-The msub method replaces all instances of a `${prop}` in a string with a value.
+The `msub` method replaces all instances of a `${prop}` in a string with a value.
 Substitutions may be specified as property key/value pairs in an object, or as array entries.
 
 ```javascript
@@ -123,15 +143,22 @@ require('msub')({ uppercase: true });
 var newString = 'This ${A} ${B_C} string'.msub({ bC: 'my', a: 'is' });
 ```
 
-To support custom formatting including date formatting using the
-[moment](https://momentjs.com/) package.
+## Formatting
+
+`msub` supports custom formatting for numbers and Date objects via
+
+- the `format` callback option
+- method names and parameters specified as part of the substitution key
+  - the method name must exist on the value
+
+Example using the [moment](https://momentjs.com/) package.
 
 ```javascript
-require('moment');
+var moment = require('moment');
 
-require('msub')({
+require('msub').msub.init({
   format: function(value:any,format:string) {
-    if( format ) {
+    if( format && value instanceof Date ) {
       return moment(value).format(format);
     }
     if( value === 'undefined' || value === 'null' ) {
@@ -139,10 +166,11 @@ require('msub')({
     }
     return value;
   };
-var newString = 'Today ${a:YYYYMMDD} and the year ${b:getFullYear} and ${c:} were the best'
-  .msub({ a: new Date(), b: new Date(1999,12), c: undefined });
-// Becomes: "Today 20190807 and the year 1999 and '' were the best"
 });
+
+var newString = 'Today ${a:YYYYMMDD} and the year ${b:getFullYear} and ${c:} were the best ${d:toFixed:2}'
+  .msub({ a: new Date(), b: new Date(1999,12), c: undefined, d: 43.2345 });
+// output: "Today 20190807 and the year 1999 and '' were the best 43.23"
 ```
 
 ## Versions
