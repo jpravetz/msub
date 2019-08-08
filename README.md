@@ -18,21 +18,17 @@ Adds an `msub` method to the String class. This only needs to be included in you
 require('msub');
 ```
 
-If you need access to the `msub` singleton (_e.g._ to call init method):
+This package also creates an `msub` singleton. When needing to access this
+singleton (_e.g._ to call `init` method):
 
 ```javascript
 // Access msub singleton
 var msub = require('msub').msub;
 ```
 
-With typescript
+With typescript, retrieves msub singleton with it's `init` method.
 
 ```ts
-import {} from 'msub';
-```
-
-```ts
-// Access msub singleton
 import { msub } from 'msub';
 ```
 
@@ -54,10 +50,10 @@ Accepts three forms of arguments:
 - Object: Key, value pair where all instances of `${key}` are replaced with
   value (see Values section below). In the special case where the key contains a
   colon, a formatter will be called. For example
-  - `${a:YYYYMMDD}` will use the format callback if specified
-  - `${a:getFullYear}` will use Date's `getFullYear` method (tests if method exists on Date or number).
-  - `${a:toFixed:2}` will use Number's `toFixed(2)` method.
-- A list of argument values: converted to array
+  - `${a:YYYYMMDD}` will use the `format` callback if specified
+  - `${a:getFullYear}` will use Date's `getFullYear` method (tests if a Date and method exists on Date).
+  - `${a:toFixed:2}` will use Number's `toFixed(2)` method (tests if a number and method exists on number).
+- A list of argument values (treated as an array)
 - An array: replaces ${0}, ${1}, \${2}, etc. with first, second, third, etc argument value.
 
 The first variation of the method is useful for printing out properties of an object.
@@ -71,13 +67,15 @@ var myObj = {
 console.log('Processing object ${id}, ${cn} for ${transId}'.msub(myObj));
 ```
 
-If you need to use the actual string _\${0}_ in your string, use the object variant
+If you need to use the actual string `${0}` in your string, use the object variant
 of the method, for example:
 
 ```javascript
-var newString = "This ${S} of ${0} actually belongs in the string".msub({s:"instance"});
+var obj = { s: 'instance' };
+console.log('This ${s} of ${0} actually belongs in the string'.msub(obj));
+```
 
-// Output
+```bash
 This instance of ${0} actually belongs in the string
 ```
 
@@ -89,45 +87,37 @@ If the corresponding key in the string does not contain a colon, the values are
 directly converted to Strings.
 
 If the key contains a colon then formatting may occur. msub first looks at the
-value type and to see if the format string is a compatible name of a method on a
-Date or Number. If it is then that method will be called. Otherwise, if a format
-callback is provided, that callback will be called.
-
-Examples date formatting:
-
-```javascript
-var myObj = {
-  d0: new Date(),
-  d1: new Date(1999, 11),
-  transId: '446'
-};
-console.log(
-  'The dates ${d0:YYYYMMDD} and ${d1:YYYYMMDD} belong to ${transId}'.msub(myObj)
-);
-console.log(
-  'The dates ${d0:toISOString} and ${d1:getFullYear} belong to ${transId}'.msub(myObj)
-);
-```
-
-You must initialize msub with a `format` callback to support custom date formatting.
-
-```js
-let opts = {};
-```
+value type (must be date or number) and to see if the format string is a
+compatible name of a method on a Date or Number. If it is then that method will
+be called. Otherwise, if a `format` callback is provided, that callback will be
+called with the value and format string. See _Formatting_ below for more information.
 
 ## Initialization Options
 
 - `open` (_string_) - Specify an open string delimiter, for example use `{` to
   use `{myString}` rather than `${myString}`. Defaults to `${`.
-- `close` (_string_) - Specify a close string delimiter. If `open` is
-  specified and open is one of `{`, `[`, `<` or `(` then close will by default
-  use the matching ending brace. Otherwise defaults to `}`.
+- `close` (_string_) - Specify a close string delimiter. Usually the closing
+  brace will be automatically selected to match the opening brace (see supported
+  matching braces below). Defaults to `}`.
 - `uppercase` (_boolean_) - If true, uppercase property names within the
   string are converted to camelcase before referencing values in the msub
   parameter dictionary (_e.g._ `MY_STRING` becomes `myString`).
 - `format` (_function_) - Callback, if specified, to use to format values that
   contain a colon. Called with the value and the optional portion of the
-  substitution that is after the colon.
+  substitution that is after the colon (see _Formatting_ below).
+
+Supported matching braces:
+
+```ts
+'${': '}',
+'#{': '}',
+'{{': '}}',
+'{': '}',
+'(': ')',
+'[': ']',
+'<': '>',
+'<<': '>>'
+```
 
 To use string delimiter
 
@@ -145,32 +135,36 @@ var newString = 'This ${A} ${B_C} string'.msub({ bC: 'my', a: 'is' });
 
 ## Formatting
 
-`msub` supports custom formatting for numbers and Date objects via
+`msub` supports custom formatting of numbers and Date objects via
 
-- the `format` callback option
-- method names and parameters specified as part of the substitution key
-  - the method name must exist on the value
+- the `format` callback option, set using the `init` method.
+- method names and parameters specified as part of the substitution key (_e.g._ `${n:toFixed:2}`).
+  - the method name must exist on the value, otherwise the `format` callback will be used if it exists.
 
 Example using the [moment](https://momentjs.com/) package.
 
 ```javascript
 var moment = require('moment');
 
-require('msub').msub.init({
-  format: function(value:any,format:string) {
-    if( format && value instanceof Date ) {
+require('../dist').msub.init({
+  format: function(value, format) {
+    if (format && value instanceof Date) {
       return moment(value).format(format);
     }
-    if( value === 'undefined' || value === 'null' ) {
-      return "''";
-    }
     return value;
-  };
+  }
 });
 
-var newString = 'Today ${a:YYYYMMDD} and the year ${b:getFullYear} and ${c:} were the best ${d:toFixed:2}'
-  .msub({ a: new Date(), b: new Date(1999,12), c: undefined, d: 43.2345 });
-// output: "Today 20190807 and the year 1999 and '' were the best 43.23"
+var newString = 'Today ${a:YYYYMMDD} and the year ${b:getFullYear} and ${c:} were the best ${d:toFixed:2}'.msub(
+  { a: new Date(), b: new Date(1999, 12), c: undefined, d: 43.2345 }
+);
+console.log(newString);
+```
+
+outputs:
+
+```bash
+Today 20190808 and the year 2000 and ${c:} were the best 43.23
 ```
 
 ## Versions
